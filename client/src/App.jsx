@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import AuthPage from './pages/AuthForm';
 import Navbar from './components/Navbar';
 import { authService } from './services/service';
+import Logout from './components/Logout';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -51,6 +52,7 @@ function App() {
           <Route path="/" element={<HomePage isLoggedIn={isLoggedIn} />} />
           <Route path="/auth" element={<AuthPage onLogin={handleLogin} />} /> 
           <Route path="/dashboard" element={<Dashboard onLogin={handleLogin} />} /> 
+          <Route path="/logout" element={<Logout onLogin={handleLogin} />} /> 
         </Routes>
       </div>
     </Router>
