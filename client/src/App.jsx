@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import HomePage from './pages/HomePage';
+import Dashboard from './pages/Dashboard';
 import AuthPage from './pages/AuthForm';
 import Navbar from './components/Navbar';
 import { authService } from './services/service';
@@ -11,14 +12,15 @@ function App() {
   const [organization, setOrganization] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Check authentication status on initial load
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const orgData = await authService.getCurrentOrganization();
-        setOrganization(orgData);  // Store the organization info
-        setIsLoggedIn(true);
-      } catch (error) {
+        if (orgData) {
+          setOrganization(orgData);
+          setIsLoggedIn(true);
+        }
+      } catch {
         setIsLoggedIn(false);
         setOrganization(null);
       } finally {
@@ -30,18 +32,16 @@ function App() {
 
   const handleLogin = (orgData) => {
     setIsLoggedIn(true);
-    setOrganization(orgData);  // Store organization data on login
+    setOrganization(orgData);
   };
 
   const handleLogout = () => {
     authService.logout();
     setIsLoggedIn(false);
-    setOrganization(null);  // Clear organization data on logout
+    setOrganization(null);
   };
 
-  if (loading) {
-    return <div className="loading-container">Loading...</div>;
-  }
+  if (loading) return <div className="loading-container">Loading...</div>;
 
   return (
     <Router>
@@ -49,10 +49,8 @@ function App() {
         <Navbar isLoggedIn={isLoggedIn} orgName={organization?.name} onLogout={handleLogout} />
         <Routes>
           <Route path="/" element={<HomePage isLoggedIn={isLoggedIn} />} />
-          <Route
-            path="/auth"
-            element={<AuthPage onLogin={handleLogin} />}
-          />
+          <Route path="/auth" element={<AuthPage onLogin={handleLogin} />} /> 
+          <Route path="/dashboard" element={<Dashboard onLogin={handleLogin} />} /> 
         </Routes>
       </div>
     </Router>

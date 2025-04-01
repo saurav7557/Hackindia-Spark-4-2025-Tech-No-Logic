@@ -24,10 +24,10 @@ const Navbar = ({ isLoggedIn, orgName, onLogout }) => {
               <span className="hide-on-mobile">Login</span>
             </Link>
           ) : (
-            <div className="org-name">
-              <span>{orgName}</span> {/* Display Organization Name */}
-              <button onClick={onLogout}>Logout</button> {/* Logout Button */}
-            </div>
+            <Link to="/dashboard" className="login-button">
+              <LogIn className="button-icon" />
+              <span className="hide-on-mobile">Dashboard</span>
+            </Link>
           )}
         </div>
 

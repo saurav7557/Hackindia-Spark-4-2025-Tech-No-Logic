@@ -1,8 +1,10 @@
 import axios from 'axios';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-// Axios instance with default configuration
+// Create Axios instance
 const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -10,7 +12,7 @@ const api = axios.create({
   },
 });
 
-// Request interceptor for injecting JWT token
+// Request interceptor to add JWT token to requests
 api.interceptors.request.use(config => {
   const token = localStorage.getItem('certichain_token');
   if (token) {
@@ -19,7 +21,7 @@ api.interceptors.request.use(config => {
   return config;
 });
 
-// Response interceptor for handling errors
+// Response interceptor to handle authentication errors
 api.interceptors.response.use(
   response => response,
   error => {
@@ -31,6 +33,7 @@ api.interceptors.response.use(
   }
 );
 
+// Auth service for handling authentication requests
 export const authService = {
   registerOrganization: async (orgData) => {
     try {
@@ -58,6 +61,9 @@ export const authService = {
   },
 
   getCurrentOrganization: async () => {
+    const token = localStorage.getItem('certichain_token');
+    if (!token) throw new Error('User not authenticated');
+
     try {
       const { data } = await api.get('/auth/me');
       return data;
@@ -67,6 +73,7 @@ export const authService = {
   }
 };
 
+// Certificate service for handling certificate-related operations
 export const certificateService = {
   issueCertificate: async (certificateData) => {
     try {
@@ -74,8 +81,7 @@ export const certificateService = {
       return data;
     } catch (error) {
       throw new Error(
-        error.response?.data?.error || 
-        'Failed to issue certificate. Please try again.'
+        error.response?.data?.error || 'Failed to issue certificate. Please try again.'
       );
     }
   },
@@ -86,8 +92,7 @@ export const certificateService = {
       return data;
     } catch (error) {
       throw new Error(
-        error.response?.data?.error || 
-        'Certificate verification failed. Invalid or expired certificate.'
+        error.response?.data?.error || 'Certificate verification failed. Invalid or expired certificate.'
       );
     }
   },
@@ -98,23 +103,24 @@ export const certificateService = {
       return data;
     } catch (error) {
       throw new Error(
-        error.response?.data?.error || 
-        'Failed to load certificates. Please try again later.'
+        error.response?.data?.error || 'Failed to load certificates. Please try again later.'
       );
     }
   }
 };
 
-// Utility function for protected routes
+// Higher Order Component for protected routes
 export const withAuth = (Component) => {
   return (props) => {
+    const navigate = useNavigate();
     const token = localStorage.getItem('certichain_token');
-    
-    if (!token) {
-      window.location.href = '/auth';
-      return null;
-    }
 
-    return <Component {...props} />;
+    useEffect(() => {
+      if (!token) {
+        navigate('/auth');
+      }
+    }, [token, navigate]);
+
+    return token ? <Component {...props} /> : null;
   };
 };

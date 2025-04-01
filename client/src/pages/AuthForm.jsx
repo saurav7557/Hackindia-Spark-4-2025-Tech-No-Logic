@@ -1,6 +1,7 @@
 "use client"
 import { useState, useEffect } from 'react'
 import { Shield, Mail, Lock, Building2, User, Phone, Globe } from 'lucide-react'
+import { authService } from '../services/service'
 import "./authfrm.css"
 
 const AuthForm = () => {
@@ -8,11 +9,12 @@ const AuthForm = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    orgName: '',
+    name: '', // Changed from orgName to match backend model
     contactPerson: '',
     phone: '',
     website: '',
-    address: ''
+    address: '',
+    walletAddress: '' // Added wallet address field which is in your backend model
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -32,33 +34,48 @@ const AuthForm = () => {
     setError('')
     setSuccessMessage('')
 
-    // Log the form data for debugging
-    console.log('Form Data:', formData)  // <-- Add this line to log form data
-
     try {
-      // Simulate API call for authentication or registration
-      console.log(isLoginView ? 'Logging in:' : 'Registering:', formData)
-
-      // Simulate a delay for API call
-      await new Promise((resolve, reject) => setTimeout(() => {
-        if (isLoginView && formData.email === 'wrong@domain.com') {
-          reject({ message: 'Incorrect email or password. Please try again.' })
-        } else if (!isLoginView && formData.email === 'exists@domain.com') {
-          reject({ message: 'Email is already in use. Please try a different one.' })
-        } else if (!formData.email || !formData.password) {
-          reject({ message: 'Both email and password are required.' })
-        } else {
-          resolve()
+      if (isLoginView) {
+        // Login operation
+        const organizationData = await authService.loginOrganization({
+          email: formData.email,
+          password: formData.password
+        })
+        
+        setSuccessMessage('Successfully logged in!')
+        console.log('Login successful:', organizationData)
+        
+        // Redirect to dashboard or home page after successful login
+        setTimeout(() => {
+          window.location.href = '/dashboard'
+        }, 1500)
+      } else {
+        // Registration operation
+        const registrationData = {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          contactPerson: formData.contactPerson,
+          website: formData.website,
+          walletAddress: formData.walletAddress || '0x0000000000000000000000000000000000000000' // Provide a default if empty
         }
-      }, 1500))
-
-      // Simulate success for demonstration purposes
-      setSuccessMessage(isLoginView ? 'Successfully logged in!' : 'Organization registered successfully!')
+        
+        const organizationData = await authService.registerOrganization(registrationData)
+        
+        setSuccessMessage('Organization registered successfully!')
+        console.log('Registration successful:', organizationData)
+        
+        // Redirect to dashboard after successful registration
+        setTimeout(() => {
+          window.location.href = '/dashboard'
+        }, 1500)
+      }
 
       // Store form data in localStorage on successful submit
       localStorage.setItem('formData', JSON.stringify(formData))
 
     } catch (err) {
+      console.error('Auth error:', err)
       setError(err.message || 'An error occurred. Please try again later.')
     } finally {
       setIsSubmitting(false)
@@ -110,16 +127,16 @@ const AuthForm = () => {
             {!isLoginView && (
               <>
                 <div className="form-group">
-                  <label htmlFor="orgName" className="label">
+                  <label htmlFor="name" className="label">
                     <Building2 className="input-icon" />
                     Organization Name
                   </label>
                   <input
                     type="text"
-                    id="orgName"
-                    name="orgName"
+                    id="name"
+                    name="name"
                     className="input"
-                    value={formData.orgName}
+                    value={formData.name}
                     onChange={handleChange}
                     required
                   />
@@ -137,6 +154,23 @@ const AuthForm = () => {
                     className="input"
                     value={formData.contactPerson}
                     onChange={handleChange}
+                    required
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label htmlFor="walletAddress" className="label">
+                    <Shield className="input-icon" />
+                    Wallet Address
+                  </label>
+                  <input
+                    type="text"
+                    id="walletAddress"
+                    name="walletAddress"
+                    className="input"
+                    value={formData.walletAddress}
+                    onChange={handleChange}
+                    placeholder="0x..."
                     required
                   />
                 </div>
@@ -190,7 +224,6 @@ const AuthForm = () => {
                     className="input"
                     value={formData.phone}
                     onChange={handleChange}
-                    required
                   />
                 </div>
 
@@ -222,7 +255,6 @@ const AuthForm = () => {
                     className="input"
                     value={formData.address}
                     onChange={handleChange}
-                    required
                   />
                 </div>
               </>
