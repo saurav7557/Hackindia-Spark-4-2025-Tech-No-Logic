@@ -12,11 +12,9 @@ app.use(cors());
 
 // Import Routes
 const certificateRoutes = require("./routes/certificateRoutes");
-const pdfRoutes = require("./routes/pdfRoutes");
 
 // API Routes
 app.use("/api/certificates", certificateRoutes);
-app.use("/api/pdf", pdfRoutes);
 
 // Health Check Route
 app.get("/", (req, res) => {
@@ -35,7 +33,7 @@ app.use((err, req, res, next) => {
 // Start Server Only If Web3 is Connected
 const startServer = async () => {
   try {
-    await provider.getBlockNumber(); // ✅ Check Blockchain Connection
+    await provider.getBlockNumber(); //  Check Blockchain Connection
     console.log("Successfully connected to Blockchain");
 
     const PORT = process.env.PORT || 5000;
