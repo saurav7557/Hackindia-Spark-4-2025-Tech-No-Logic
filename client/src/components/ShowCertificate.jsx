@@ -100,10 +100,6 @@ const ShowCertificate = ({ certificateToken }) => {
     }
   }
 
-  const goBack = () => {
-    window.history.back()
-  }
-
   if (loading) {
     return (
       <div className="container">
@@ -131,12 +127,7 @@ const ShowCertificate = ({ certificateToken }) => {
 
   return (
     <div className="container">
-      <button className="back-button" onClick={goBack}>
-        <ArrowLeft className="icon" />
-        Back
-      </button>
-
-      <div className="header">
+        <div className="header">
         <div className="title">Certificate Verified</div>
         <p className="subtitle">This certificate has been verified on the <span className="highlight">{metadata.verificationMethod}</span> and is authentic</p>
       </div>
