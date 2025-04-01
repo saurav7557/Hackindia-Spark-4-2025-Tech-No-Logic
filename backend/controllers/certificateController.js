@@ -111,7 +111,7 @@ exports.issueCertificate = async (req, res, next) => {
       tokenURI = await uploadToPinata(certificateMetadata);
       console.log("Certificate metadata uploaded to IPFS:", tokenURI);
     } catch (uploadError) {
-      console.error("🔥 Error Uploading to Pinata:", uploadError.message);
+      console.error("Error Uploading to Pinata:", uploadError.message);
       return res.status(500).json({ error: "Failed to upload certificate metadata to IPFS." });
     }
 
@@ -146,8 +146,8 @@ exports.issueCertificate = async (req, res, next) => {
         certificateNumberToTokenId.set(generatedCertificateNumber, tokenId.toString());
       }
 
-      console.log("✅ Certificate issued on blockchain:", tx.hash);
-      console.log("✅ Certificate Number:", generatedCertificateNumber);
+      console.log("Certificate issued on blockchain:", tx.hash);
+      console.log("Certificate Number:", generatedCertificateNumber);
       
       return res.status(200).json({
         message: "Certificate issued successfully",
@@ -164,11 +164,11 @@ exports.issueCertificate = async (req, res, next) => {
         }
       });
     } catch (blockchainError) {
-      console.error("🔥 Error Issuing Certificate on Blockchain:", blockchainError.message);
+      console.error("Error Issuing Certificate on Blockchain:", blockchainError.message);
       return res.status(500).json({ error: "Failed to issue certificate on blockchain." });
     }
   } catch (error) {
-    console.error("🔥 Error Issuing Certificate:", error.message);
+    console.error("Error Issuing Certificate:", error.message);
     return res.status(500).json({ error: "An unexpected error occurred while issuing the certificate." });
   }
 };
@@ -198,8 +198,8 @@ exports.verifyCertificate = async (req, res, next) => {
       // Get the current owner of the certificate
       owner = await contract.ownerOf(tokenId);
       
-      console.log("✅ Certificate Found:", tokenURI);
-      console.log("✅ Certificate Owner:", owner);
+      console.log("Certificate Found:", tokenURI);
+      console.log("Certificate Owner:", owner);
       
       // Fetch the metadata from IPFS
       const metadataResponse = await fetch(tokenURI);
@@ -219,7 +219,7 @@ exports.verifyCertificate = async (req, res, next) => {
         verificationTimestamp: new Date().toISOString()
       });
     } catch (error) {
-      console.error("🔥 Error Verifying Certificate:", error.message);
+      console.error("Error Verifying Certificate:", error.message);
       
       // Check if the error is due to nonexistent token
       if (error.message.includes("nonexistent token") || error.message.includes("invalid token ID")) {
@@ -235,7 +235,7 @@ exports.verifyCertificate = async (req, res, next) => {
       });
     }
   } catch (error) {
-    console.error("🔥 Error Verifying Certificate:", error.message);
+    console.error("Error Verifying Certificate:", error.message);
     return res.status(500).json({ error: "An unexpected error occurred while verifying the certificate." });
   }
 };
@@ -275,8 +275,8 @@ exports.verifyCertificateByNumber = async (req, res, next) => {
       // Get the current owner of the certificate
       owner = await contract.ownerOf(tokenId);
       
-      console.log("✅ Certificate Found:", tokenURI);
-      console.log("✅ Certificate Owner:", owner);
+      console.log("Certificate Found:", tokenURI);
+      console.log("Certificate Owner:", owner);
       
       // Fetch the metadata from IPFS
       const metadataResponse = await fetch(tokenURI);
@@ -405,7 +405,7 @@ exports.revokeCertificate = async (req, res, next) => {
       const tx = await contract.revokeCertificate(tokenId, reason || "Certificate revoked");
       await tx.wait();
       
-      console.log("✅ Certificate revoked:", tx.hash);
+      console.log("Certificate revoked:", tx.hash);
       
       // Remove from certificate number mapping if found
       if (certificateNumber) {

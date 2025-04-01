@@ -53,7 +53,7 @@ export default function HomePage() {
     <div className="container">
       <div className="header">
         <h1 className="title">
-          <span className="highlight">Certi</span>Chain
+          <span className="highlight">Proof</span>X
         </h1>
         <p className="subtitle">
           Blockchain-powered certificate verification system for secure, tamper-proof credentials
@@ -105,7 +105,6 @@ export default function HomePage() {
           </form>
         </div>
       </div>
-        {/* <CertificateForm/> */}
     </div>
   )
 }

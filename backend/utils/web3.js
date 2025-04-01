@@ -10,7 +10,7 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
 // Ensure RPC URL is correctly loaded
 if (!ALCHEMY_RPC_URL) {
-    console.error("❌ ERROR: ALCHEMY_RPC_URL is missing");
+    console.error("ERROR: ALCHEMY_RPC_URL is missing");
     process.exit(1);
 }
 
@@ -19,7 +19,7 @@ const provider = new ethers.JsonRpcProvider(ALCHEMY_RPC_URL, "sepolia");
 
 // Ensure Private Key is set
 if (!PRIVATE_KEY) {
-    console.error("❌ ERROR: PRIVATE_KEY is missing");
+    console.error("ERROR: PRIVATE_KEY is missing");
     process.exit(1);
 }
 
@@ -31,9 +31,9 @@ const contract = new ethers.Contract(contractAddress, contractABI.abi, wallet);
 (async () => {
     try {
         const blockNumber = await provider.getBlockNumber();    
-        console.log(`✅ Connected to Sepolia! Latest Block: ${blockNumber}`);
+        console.log(`Connected to Sepolia! Latest Block: ${blockNumber}`);
     } catch (error) {
-        console.error("❌ Web3 Connection Failed:", error.message);
+        console.error("Web3 Connection Failed:", error.message);
         process.exit(1);
     }
 })();
